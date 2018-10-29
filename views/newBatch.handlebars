@@ -1,0 +1,263 @@
+<div class="container" style="width:70%" >
+
+<h1 style="text-align:center; margin:50px 0px;">New Batch</h1>
+
+
+
+<form action="/batches" method="post">
+  <div class="form-group row">
+    <label for="name" class="col-sm-3 col-form-label">Name</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="name" name="name" placeholder="Batch name">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="date" class="col-sm-3 col-form-label">Brew Date</label>
+    <div class="col-sm-6">
+      <input type="date" id="date" name="date">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="quantity" class="col-sm-3 col-form-label">Quantity in Gallons</label>
+    <div class="col-sm-2">
+      <input type="number" class="form-control" id="quantity" min="0" name="quantity" placeholder="e.g. 5">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="brewMethod" class="col-sm-3 col-form-label">Brew Method</label>
+    <div class="col-sm-6">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="method" id="method1" value="heat">
+        <label class="form-check-label" for="method1">Heat</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="method" id="method2" value="sulfites">
+        <label class="form-check-label" for="method2">Sulfites</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="method" id="method3" value="wild">
+        <label class="form-check-label" for="method3">Wild</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="method" id="method4" value="other">
+        <label class="form-check-label" for="method4">Other</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="recipe" class="col-sm-3 col-form-label">Recipe</label>
+    <div class="col-sm-6">
+      <select name="recipe" id="recipe">
+        <option value="" disabled selected style="display:none;"></option>
+        {{#each recipes}}
+          <option value={{this.id}}>{{this.name}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="fruits" class="col-sm-3 col-form-label">Supplied Fruit</label>
+    <div class="col-md-2">
+      <select name="suppliers1" >
+        <option value="" disabled selected style="display:none;">Supplier</option>
+        {{#each vendors}}
+          <option value={{this.id}}>{{this.name}}</option>
+        {{/each}}
+      </select>
+      <!-- <div id="addFruit" style="color: grey;">Add Fruit</div> -->
+    </div>
+    <div class="col-md-2">
+      <select name="fruits1" id="fruits" >
+        <option value="" disabled selected style="display:none;">Fruit</option>
+        {{#each fruits}}
+          <option value={{this.id}}>{{this.type}}</option>
+        {{/each}}
+      </select>
+      <!-- <div id="addFruit" style="color: grey;">Add Fruit</div> -->
+    </div>
+    <div class="col-md-5">
+      <input type="text" class="form-control" id="quantity1" name="quantity1" placeholder="Quantity e.g. 5 lbs">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="fruits" class="col-sm-3 col-form-label"></label>
+    <div class="col-md-2">
+      <select name="suppliers2"  >
+        <option value="" disabled selected style="display:none;">Supplier</option>
+        {{#each vendors}}
+          <option value={{this.id}}>{{this.name}}</option>
+        {{/each}}
+      </select>
+      <!-- <div id="addFruit" style="color: grey;">Add Fruit</div> -->
+    </div>
+    <div class="col-md-2">
+      <select name="fruits2"  >
+        <option value="" disabled selected style="display:none;">Fruit</option>
+        {{#each fruits}}
+          <option value={{this.id}}>{{this.type}}</option>
+        {{/each}}
+      </select>
+      <!-- <div id="addFruit" style="color: grey;">Add Fruit</div> -->
+    </div>
+    <div class="col-md-5">
+      <input type="text" class="form-control" id="quantity2" name="quantity2" placeholder="Quantity e.g. 5 lbs">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="fruits" class="col-sm-3 col-form-label"></label>
+    <div class="col-md-2">
+      <select name="suppliers3"  >
+        <option value="" disabled selected style="display:none;">Supplier</option>
+        {{#each vendors}}
+          <option value={{this.id}}>{{this.name}}</option>
+        {{/each}}
+      </select>
+      <!-- <div id="addFruit" style="color: grey;">Add Fruit</div> -->
+    </div>
+    <div class="col-md-2">
+      <select name="fruits3"  >
+        <option value="" disabled selected style="display:none;">Fruit</option>
+        {{#each fruits}}
+          <option value={{this.id}}>{{this.type}}</option>
+        {{/each}}
+      </select>
+      <!-- <div id="addFruit" style="color: grey;">Add Fruit</div> -->
+    </div>
+    <div class="col-md-5">
+      <input type="text" class="form-control" id="quantity3" name="quantity3" placeholder="Quantity e.g. 5 lbs">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="fruits" class="col-sm-3 col-form-label"></label>
+    <div class="col-md-2">
+      <select name="suppliers4"  >
+        <option value="" disabled selected style="display:none;">Supplier</option>
+        {{#each vendors}}
+          <option value={{this.id}}>{{this.name}}</option>
+        {{/each}}
+      </select>
+      <!-- <div id="addFruit" style="color: grey;">Add Fruit</div> -->
+    </div>
+    <div class="col-md-2">
+      <select name="fruits4"  >
+        <option value="" disabled selected style="display:none;">Fruit</option>
+        {{#each fruits}}
+          <option value={{this.id}}>{{this.type}}</option>
+        {{/each}}
+      </select>
+      <!-- <div id="addFruit" style="color: grey;">Add Fruit</div> -->
+    </div>
+    <div class="col-md-5">
+      <input type="text" class="form-control" id="quantity1" name="quantity4" placeholder="Quantity e.g. 5 lbs">
+    </div>
+  </div>
+
+  <!-- <div class="form-group row">
+    <label for="suppliers" class="col-sm-3 col-form-label">Suppliers Used</label>
+    <div class="col-sm-6">
+      <select name="suppliers" id="suppliers" multiple>
+        {{#each vendors}}
+          <option value={{this.id}}>{{this.name}}</option>
+        {{/each}}
+      </select>
+      <div id="addFruit"><a href="/vendors/new">Add Supplier</a></div>
+    </div>
+  </div> -->
+  <div class="form-group row">
+    <label for="rating" class="col-sm-3 col-form-label">Rating</label>
+    <div class="col-sm-6">
+      <input type="number" name="rating" id="rating" min="1" max="100">
+    </div>
+  </div>
+  <div class="form-group row">
+    <div class="col-sm-12 submit">
+      <input class="submit" type="submit" value="Save">
+    </div>
+  </div>
+</form>
+<div>
+<!-- The Modal taken from W3School https://www.w3schools.com/howto/howto_css_modals.asp-->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content col-sm-offset-2 col-sm-6">
+    <span class="close">&times;</span>
+    New Fruit
+    <form action="/fruits" method="post">
+    <div class="form-group" >
+        <label for="type" class="sr-only"></label>
+        <input type="text" class="col-sm-12" name="type" id="type" placeholder="Enter name of fruit. E.g. Gala">
+      <input type="submit" value="Save">
+    </div>
+    </form>
+  </div>
+
+</div>
+<style>
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    /* width: 50%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    text-align: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+</style>
+<script>
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("addFruit");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on the button, open the modal
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>

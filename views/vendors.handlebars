@@ -1,0 +1,25 @@
+<div class="container">
+  <h1>Suppliers</h1>
+  <div class="row">
+    {{#each vendors}}
+    <div class="col-sm-3">
+      <div class="card">
+        <img class="card-img-top" src="/images/timothy-meinberg-357338-unsplash.jpg" alt="Card image cap">
+        <div class="card-body">
+          <div class="card-title">
+            <span style="font-size: 1.5em">{{this.vendor.name}}</span><br>
+            <small>78944</small><br>
+          </div>
+          {{#each this.fruits}}
+            {{this.type}} {{this.category}}
+          <button class="smallx">x</button><br>
+          {{/each}}
+          <a href="#" class="btn ">Add Fruit</a>
+          <a href="#" class="btn ">Delete</a>
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  <div style="text-align:center"><button style="font-size: 1.5em; margin-top:30px"><a href="/vendors/new" >Add Supplier</a></button></div>
+</div>

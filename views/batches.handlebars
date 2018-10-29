@@ -1,0 +1,172 @@
+<div class="container">
+<h1 id="title">Batches</h1>
+
+
+<div class="row">
+  <div class="col-md-5">
+  <form>
+    <div class="form-group row">
+      <label for="date" class="col-sm-3 col-form-label">Brew Date</label>
+      <div class="col-sm-6">
+        <input type="date" id="date" name="date">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="brewMethod" class="col-sm-3 col-form-label">Brew Method</label>
+      <div class="col-sm-6">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="method" id="method1" value="heat">
+          <label class="form-check-label" for="method1">Heat</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="method" id="method2" value="sulfites">
+          <label class="form-check-label" for="method2">Sulfites</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="method" id="method3" value="wild">
+          <label class="form-check-label" for="method3">Wild</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="method" id="method4" value="other">
+          <label class="form-check-label" for="method4">Other</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="recipe" class="col-sm-3 col-form-label">Recipe</label>
+      <div class="col-sm-6">
+        <select name="recipe" id="recipe">
+          {{#each recipes}}
+            <option value={{this.id}}>{{this.name}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="fruits" class="col-sm-3 col-form-label">Fruits Used</label>
+      <div class="col-sm-6">
+        <select name="fruits" id="fruits" multiple>
+          {{#each fruits}}
+            <option value={{this.id}}>{{this.type}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="suppliers" class="col-sm-3 col-form-label">Suppliers Used</label>
+      <div class="col-sm-6">
+        <select name="suppliers" id="suppliers" multiple>
+          {{#each vendors}}
+            <option value={{this.id}}>{{this.name}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="rating" class="col-sm-3 col-form-label">Rating</label>
+      <div class="col-sm-3">
+        <select name="quantity" id="quantity">
+          <option value=">">greater than</option>
+          <option value="<">less than</option>
+          <option value="=">equal to</option>
+        </select>
+      </div>
+      <div class="col-sm-6">
+        <input type="number" name="rating" id="rating" min="1" max="100">
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-12 submit">
+        <input class="submit" type="submit" value="Filter">
+      </div>
+    </div>
+  </form>
+
+  </div>
+
+  <div class="col-md-7">
+    <div class="row">
+      {{#each batches}}
+      <div class="col-sm-4">
+        <div class="card">
+          <img class="card-img-top" src="/images/beer-barrel-keg-cask-oak.jpg" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">Sweet Cider</h5>
+            <h6>Rating: 87</h6>
+            <p class="card-text">November 6, 2017</p>
+            <div href="#" class="btn " data-toggle="modal" data-target="#recipeModal" data-index={{@index}}>View</div>
+            <a href="#" class="btn ">Delete</a>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+</div>
+</div>
+<div style="text-align:center"><button style="font-size: 1.5em; margin-top:30px"><a href="/batches/new" >New Batch</a></button></div>
+</div>
+
+<div class="modal fade" id="recipeModal" tabindex="-1" role="dialog" aria-labelledby="mtitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mtitle">New message</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="toAppend">
+        </div>
+    </div>
+  </div>
+</div>
+
+
+<script >
+
+function GetProfileInfos(jQuery, i) {
+
+  jQuery.ajax({
+    url: '/ingredients/1',
+    type: 'GET',
+    success: function(response) {
+       var value = response;
+       var mtitle = document.getElementById("mtitle");
+       mtitle.innerText = value.name;
+       // mbody = modal.find('.modal-body')
+       let mbody = document.getElementById("toAppend");
+
+       for (let i=0; i<value.ing.length; i++){
+         let litem = document.createElement('li');
+         litem.innerText = value.ing[i];
+         mbody.append(litem);
+       }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        var mtitle = document.getElementById("mtitle");
+        mtitle.innerText = "Error Retrieving Recipe";
+      }
+
+   });
+
+ }
+
+ function readyFn( jQuery ) {
+      $('#recipeModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var id = button.data('index') // Extract info from data-* attributes
+        GetProfileInfos(jQuery, id);
+
+      })
+      $('#recipeModal').on('hide.bs.modal', function (event) {
+        let mbody = document.getElementById("toAppend");
+        mbody.innerHTML = "";
+      })
+ }
+
+ $( document ).ready( readyFn );
+
+
+</script>

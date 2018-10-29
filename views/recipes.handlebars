@@ -1,0 +1,91 @@
+<div class="container">
+  <h1>Recipes</h1>
+  <div class="row">
+    {{#each recipes}}
+      <div class="col-sm-3">
+        <div class="card">
+          <img class="card-img-top" src="/images/10-barrel-brewing-alcohol-alcoholic-beverages-1267684.jpg" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">{{this.name}}</h5>
+            <a href="#" class="btn " data-toggle="modal" data-target="#recipeModal" data-index={{this.id}}>View</a>
+            <a href="#" class="btn ">Delete</a>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+  <div style="text-align:center"><button style="font-size: 1.5em; margin-top:30px"><a href="/recipes/new" >New Recipe</a></button></div>
+</div>
+<div class="modal fade" id="recipeModal" tabindex="-1" role="dialog" aria-labelledby="mtitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mtitle">Recipe</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="toAppend">
+        </div>
+    </div>
+  </div>
+</div>
+
+<script >
+
+function GetProfileInfos(jQuery, i) {
+
+  jQuery.ajax({
+    url: '/recipes/' + i,
+    type: 'GET',
+    // async: false,
+    success: function(response) {
+       var value = response;
+       console.log(value);
+       var mtitle = document.getElementById("mtitle");
+       mtitle.innerText = value.recipe.name;
+       // mbody = modal.find('.modal-body')
+       let mbody = document.getElementById("toAppend");
+
+       for (let i=0; i<value.ringredients.length; i++){
+         let litem = document.createElement('li');
+         litem.innerText = value.ringredients[i].quantity + " of " + value.ringredients[i].item;
+         mbody.append(litem);
+       }
+       let newDiv = document.createElement('div');
+       let update = document.createElement('a');
+       update.href = "/recipes/update/" + value.recipe.id;
+       update.innerText = "Update";
+       update.class="btn";
+       newDiv.append(update);
+       mbody.append(newDiv);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        // alert(xhr.status);
+        // alert(thrownError);
+        var mtitle = document.getElementById("mtitle");
+        mtitle.innerText = "Error Retrieving Recipe";
+      }
+
+   });
+
+ }
+
+ function readyFn( jQuery ) {
+      // $('#testing').click({param1: jQuery, param2: "World"},GetProfileInfos)
+      $('#recipeModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var id = button.data('index'); // Extract info from data-* attributes
+        GetProfileInfos(jQuery, id);
+      })
+      $('#recipeModal').on('hide.bs.modal', function (event) {
+        let mbody = document.getElementById("toAppend");
+        mbody.innerHTML = "";
+      })
+ }
+
+ $( document ).ready( readyFn );
+
+
+</script>
