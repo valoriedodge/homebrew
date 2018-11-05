@@ -3,7 +3,7 @@ module.exports = function(){
     var router = express.Router();
 
     function getFruits(res, mysql, context, complete){
-        mysql.pool.query("SELECT id, category, type FROM fruits", function(error, results, fields){
+        mysql.pool.query("SELECT id, type FROM fruits", function(error, results, fields){
             if(error){
                 res.write(JSON.stringify(error));
                 res.end();
@@ -36,29 +36,81 @@ module.exports = function(){
     }
 
     function getBatches(res, mysql, context, complete){
-        mysql.pool.query("SELECT id, name, date, rating FROM batches", function(error, results, fields){
+        mysql.pool.query("SELECT batches.id as id, batches.name as name, date, quantity, brewing, rating, recipes.name as recipe FROM batches INNER JOIN recipes ON batches.recipe = recipes.id", function(error, results, fields){
             if(error){
                 res.write(JSON.stringify(error));
                 res.end();
             }
             context.batches  = results;
+
+            for (let i =0; i<context.batches.length; i++){
+              context.batches[i].date = new Date(context.batches[i].date).toDateString();
+            }
             complete();
         });
     }
 
-    function getBatch(res, mysql, context, complete){
-        var sql = "SELECT id, name, date, quantity, brewing, rating, recipe FROM batches WHERE id=?";
+    function getBatch(id, res, mysql, context, complete){
+        var sql = "SELECT batches.id as id, batches.name as name, date, quantity, brewing, rating, recipes.name as recipe FROM batches INNER JOIN recipes ON batches.recipe = recipes.id WHERE batches.id=?";
         var inserts = [id];
         mysql.pool.query(sql, inserts, function(error, results, fields){
             if(error){
                 res.write(JSON.stringify(error));
                 res.end();
             }
-            context.batch  = results;
+            context.batch  = results[0];
+            context.batch.date = new Date(context.batch.date).toDateString();
             complete();
         });
     }
 
+    function getnBatch(id, idx, res, mysql, context, complete){
+        var sql = "SELECT batches.id as id, batches.name as name, date, quantity, brewing, rating, recipes.name as recipe FROM batches INNER JOIN recipes ON batches.recipe = recipes.id WHERE batches.id=?";
+        console.log("*-------------");
+        console.log(id);
+        var inserts = [id];
+        mysql.pool.query(sql, inserts, function(error, results, fields){
+            if(error){
+                res.write(JSON.stringify(error));
+                res.end();
+            }
+            console.log(results[0]);
+            console.log(context.batches);
+            console.log(idx);
+            context.batches[idx] = results[0];
+            context.batches[idx].date = new Date(context.batches[idx].date).toDateString();
+            complete();
+        });
+    }
+
+    function getBatchFruits(id, res, mysql, context, complete){
+        var sql = "SELECT fruits.type as type, vendors.name as name, batch_fruits.quantity as quantity FROM batch_fruits INNER JOIN vendors ON vendors.id = batch_fruits.vid INNER JOIN fruits ON fruits.id = batch_fruits.fid WHERE batch_fruits.bid=?";
+        var inserts = [id];
+        mysql.pool.query(sql, inserts, function(error, results, fields){
+            if(error){
+                res.write(JSON.stringify(error));
+                res.end();
+            }
+            context.bFruits  = results;
+            complete();
+        });
+    }
+
+    router.get('/delete/:id', function(req, res){
+        var mysql = req.app.get('mysql');
+        var sql = "DELETE FROM batches WHERE id=?";
+        var inserts = [req.params.id];
+        sql = mysql.pool.query(sql,inserts,function(error, results, fields){
+              if(error){
+                  console.log(JSON.stringify(error))
+                  res.write(JSON.stringify(error));
+                  res.end();
+              }else{
+                res.redirect('/batches');
+              }
+
+        });
+    });
 
 
     // function getPeoplebyHomeworld(req, res, mysql, context, complete){
@@ -114,6 +166,7 @@ module.exports = function(){
         getFruits(res, mysql, context, complete);
         getVendors(res, mysql, context, complete);
         getBatches(res, mysql, context, complete);
+
         function complete(){
             callbackCount++;
             if(callbackCount >= 4){
@@ -138,6 +191,114 @@ module.exports = function(){
 
       }
     });
+
+    router.get('/:id', function(req, res){
+        var mysql = req.app.get('mysql');
+        console.log(req.params.id)
+        var callbackCount = 0;
+        var context = {};
+        getBatch(req.params.id,res, mysql, context, complete);
+        getBatchFruits(req.params.id, res, mysql, context, complete);
+        function complete(){
+            callbackCount++;
+            if(callbackCount >= 2){
+                res.render('batch', context);
+            }
+
+        }
+    });
+
+    // router.get('removefruit/:id', function(req, res){
+    //     var mysql = req.app.get('mysql');
+    //     console.log(req.params.id)
+    //     var fruit = req.query.fruit;
+    //     var vendor = req.query.vendor;
+    //     var sql = "DELETE FROM batch_fruits WHERE bid=? AND fid=? AND vid=?";
+    //     var inserts = [req.params.id, fruit, vendor];
+    //     sql = mysql.pool.query(sql,inserts,function(error, results, fields){
+    //           if(error){
+    //               console.log(JSON.stringify(error))
+    //               res.write(JSON.stringify(error));
+    //               res.end();
+    //           }else{
+    //             res.redirect('batches/'+req.params.id, context);
+    //           }
+    //
+    //     });
+    // });
+
+    router.post('/filter', function(req, res){
+        var mysql = req.app.get('mysql');
+        console.log(req.body)
+        var fruits = req.body.fruits;
+        var vendors = req.body.suppliers;
+        var sql = "";
+        var context = {};
+        context.batches = [];
+        var inserts = [];
+        if (fruits || vendors){
+          sql += "SELECT bid from batch_fruits WHERE  ";
+          if (fruits && vendors){
+            for (let i=0; i<fruits.length;i++){
+              sql += "fid = ? OR "
+              inserts.push(fruits[i]);
+            }
+            for (let i=0; i<vendors.length;i++){
+              sql += "vid = ?"
+              inserts.push(vendors[i]);
+              if(i < vendors.length-1){
+                sql += " OR ";
+              }
+            }
+          } else if (fruits) {
+            for (let i=0; i<fruits.length;i++){
+              sql += "fid = ?"
+              inserts.push(fruits[i]);
+              if(i < fruits.length-1){
+                sql += " OR ";
+              }
+            }
+          } else if (vendors) {
+            for (let i=0; i<vendors.length;i++){
+              sql += "vid = ?"
+              inserts.push(vendors[i]);
+              if(i < vendors.length-1){
+                sql += " OR ";
+              }
+            }
+          }
+
+        // var sql = "SELECT bid FROM batch_fruits WHERE vid IN ? OR fid IN ? INNER JOIN batches";
+          // var inserts = [vendors, fruits];
+          sql = mysql.pool.query(sql,inserts,function(error, results, fields){
+                if(error){
+                    console.log(JSON.stringify(error))
+                    res.write(JSON.stringify(error));
+                    res.end();
+                }else{
+                  console.log(results);
+                  var callbackCount = 0;
+                  var check = results.length;
+                  function complete(){
+                      callbackCount++;
+                      if(callbackCount >= check){
+                          res.render('filteredBatches', context);
+                      }
+
+                  }
+                  for(let i=0; i<check; i++){
+                    console.log("**************************");
+                    console.log(results[i]);
+                    getnBatch(results[i].bid, i, res, mysql, context, complete);
+                  }
+                }
+
+          });
+        }else{
+          res.redirect('/batches');
+        }
+    });
+
 
     // /*Display all people from a given homeworld. Requires web based javascript to delete users with AJAX*/
     // router.get('/filter/:homeworld', function(req, res){
@@ -271,41 +432,41 @@ module.exports = function(){
     // });
 
     /* The URI that update data is sent to in order to update a person */
-
-    router.put('/:id', function(req, res){
-        var mysql = req.app.get('mysql');
-        console.log(req.body)
-        console.log(req.params.id)
-        var sql = "UPDATE bsg_people SET fname=?, lname=?, homeworld=?, age=? WHERE character_id=?";
-        var inserts = [req.body.fname, req.body.lname, req.body.homeworld, req.body.age, req.params.id];
-        sql = mysql.pool.query(sql,inserts,function(error, results, fields){
-            if(error){
-                console.log(error)
-                res.write(JSON.stringify(error));
-                res.end();
-            }else{
-                res.status(200);
-                res.end();
-            }
-        });
-    });
+    //
+    // router.put('/:id', function(req, res){
+    //     var mysql = req.app.get('mysql');
+    //     console.log(req.body)
+    //     console.log(req.params.id)
+    //     var sql = "UPDATE bsg_people SET fname=?, lname=?, homeworld=?, age=? WHERE character_id=?";
+    //     var inserts = [req.body.fname, req.body.lname, req.body.homeworld, req.body.age, req.params.id];
+    //     sql = mysql.pool.query(sql,inserts,function(error, results, fields){
+    //         if(error){
+    //             console.log(error)
+    //             res.write(JSON.stringify(error));
+    //             res.end();
+    //         }else{
+    //             res.status(200);
+    //             res.end();
+    //         }
+    //     });
+    // });
 
     /* Route to delete a person, simply returns a 202 upon success. Ajax will handle this. */
 
-    router.delete('/:id', function(req, res){
-        var mysql = req.app.get('mysql');
-        var sql = "DELETE FROM bsg_people WHERE character_id = ?";
-        var inserts = [req.params.id];
-        sql = mysql.pool.query(sql, inserts, function(error, results, fields){
-            if(error){
-                res.write(JSON.stringify(error));
-                res.status(400);
-                res.end();
-            }else{
-                res.status(202).end();
-            }
-        })
-    })
+    // router.delete('/:id', function(req, res){
+    //     var mysql = req.app.get('mysql');
+    //     var sql = "DELETE FROM bsg_people WHERE character_id = ?";
+    //     var inserts = [req.params.id];
+    //     sql = mysql.pool.query(sql, inserts, function(error, results, fields){
+    //         if(error){
+    //             res.write(JSON.stringify(error));
+    //             res.status(400);
+    //             res.end();
+    //         }else{
+    //             res.status(202).end();
+    //         }
+    //     })
+    // })
 
     return router;
 }();

@@ -11,15 +11,70 @@
             <small>78944</small><br>
           </div>
           {{#each this.fruits}}
-            {{this.type}} {{this.category}}
-          <button class="smallx">x</button><br>
+            {{this.type}}
+          <button class="smallx"><a href="vendors/removefruit/{{../this.vendor.id}}?fruit={{this.id}}" onclick="return confirm('Are you sure you want to delete this item?');"> x </a></button><br>
           {{/each}}
-          <a href="#" class="btn ">Add Fruit</a>
-          <a href="#" class="btn ">Delete</a>
+          <a href="#" class="btn " data-toggle="modal" data-target="#fruitModal" data-name="{{this.vendor.name}}" data-index={{this.vendor.id}} class="btn ">Add Fruit</a>
+          <a href="/vendors/delete/{{this.vendor.id}}?" onclick="return confirm('Are you sure you want to delete this supplier?');" class="btn ">Delete</a>
         </div>
       </div>
     </div>
     {{/each}}
   </div>
-  <div style="text-align:center"><button style="font-size: 1.5em; margin-top:30px"><a href="/vendors/new" >Add Supplier</a></button></div>
+  <div style="text-align:center"><button class="addBtn" ><a href="/vendors/new" >Add Supplier</a></button></div>
 </div>
+
+<!-- The Modal taken from W3School https://www.w3schools.com/howto/howto_css_modals.asp-->
+<div class="modal fade" id="fruitModal" tabindex="-1" role="dialog" aria-labelledby="mtitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mtitle">Supplier</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="/vendors/addFruits" method="post">
+          <input type="hidden" class="form-control" name="id" id="id">
+          <div class="form-group row">
+            <label for="fruits" class="col-sm-2 col-form-label">Fruits Sold</label>
+            <div class="col-sm-10">
+              <select name="fruits" id="fruits" multiple>
+                {{#each fruits}}
+                <option value={{this.id}}>{{this.type}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-sm-6 submit">
+              <input class="submit" type="submit" value="Save">
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function readyFn( jQuery ) {
+     // $('#testing').click({param1: jQuery, param2: "World"},GetProfileInfos)
+     $('#fruitModal').on('show.bs.modal', function (event) {
+       var button = $(event.relatedTarget) // Button that triggered the modal
+       var id = button.data('index'); // Extract info from data-* attributes
+       var name = button.data('name');
+       var modal = $(this)
+       modal.find('.modal-title').text('Add fruits for ' + name)
+        modal.find('.modal-body #id').val(id)
+     })
+     // $('#fruitsModal').on('hide.bs.modal', function (event) {
+     //   let mbody = document.getElementById("toAppend");
+     //   mbody.innerHTML = "";
+     // })
+}
+
+$( document ).ready( readyFn );
+</script>

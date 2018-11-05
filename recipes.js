@@ -27,7 +27,7 @@ module.exports = function(){
     }
 
     function getRecipe(id, res, mysql, context, complete){
-        var sql = "SELECT id, name FROM recipes WHERE id = ?";
+        var sql = "SELECT id, name, directions FROM recipes WHERE id = ?";
         var inserts = [id];
         mysql.pool.query(sql, inserts, function(error, results, fields){
             if(error){
@@ -41,7 +41,7 @@ module.exports = function(){
 
 
     function getRecipes(res, mysql, context, complete){
-        mysql.pool.query("SELECT id, name FROM recipes", function(error, results, fields){
+        mysql.pool.query("SELECT id, name, directions FROM recipes", function(error, results, fields){
             if(error){
                 res.write(JSON.stringify(error));
                 res.end();
@@ -103,8 +103,8 @@ module.exports = function(){
     router.post('/', function(req, res){
         console.log(req.body)
         var mysql = req.app.get('mysql');
-        var sql = "INSERT INTO recipes (name) VALUES (?)";
-        var inserts = [req.body.name];
+        var sql = "INSERT INTO recipes (name, directions) VALUES (?, ?)";
+        var inserts = [req.body.name, req.body.directions];
         sql = mysql.pool.query(sql,inserts,function(error, results, fields){
             if(error){
                 console.log(JSON.stringify(error))
@@ -114,7 +114,7 @@ module.exports = function(){
                 console.log(results.insertId);
                 var rid = results.insertId;
                 var counter = 1;
-                var length = Number(req.body.numIng) + 1;
+                var length = 9;
                 // Loop through the number of ingredients from form
                 for (let i =1; i<length;i++){
                   var iid = req.body["ingredients" + i]
@@ -165,8 +165,8 @@ module.exports = function(){
     router.post('/update/:id', function(req, res){
         console.log(req.body)
         var mysql = req.app.get('mysql');
-        var sql = "UPDATE recipes SET name=? WHERE id=?";
-        var inserts = [req.body.name, req.params.id];
+        var sql = "UPDATE recipes SET name=?, directions=? WHERE id=?";
+        var inserts = [req.body.name, req.body.directions, req.params.id];
         var rid = req.params.id;
         sql = mysql.pool.query(sql,inserts,function(error, results, fields){
             if(error){
@@ -204,22 +204,21 @@ module.exports = function(){
         });
     });
 
-    /* Route to delete a person, simply returns a 202 upon success. Ajax will handle this. */
-
-    router.delete('/:id', function(req, res){
+    router.get('/delete/:id', function(req, res){
         var mysql = req.app.get('mysql');
-        var sql = "DELETE FROM bsg_people WHERE character_id = ?";
+        var sql = "DELETE FROM recipes WHERE id=?";
         var inserts = [req.params.id];
-        sql = mysql.pool.query(sql, inserts, function(error, results, fields){
-            if(error){
-                res.write(JSON.stringify(error));
-                res.status(400);
-                res.end();
-            }else{
-                res.status(202).end();
-            }
-        })
-    })
+        sql = mysql.pool.query(sql,inserts,function(error, results, fields){
+              if(error){
+                  console.log(JSON.stringify(error))
+                  res.write(JSON.stringify(error));
+                  res.end();
+              }else{
+                res.redirect('/recipes');
+              }
+
+        });
+    });
 
     return router;
 }();

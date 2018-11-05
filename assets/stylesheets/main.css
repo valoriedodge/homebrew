@@ -5,6 +5,12 @@ body, html {
 .main {
     height:90%;
 }
+.addBtn{
+  margin: 30px;
+  background: white;
+  border-radius: 5px;
+  font-size: 1.5em;
+}
 /* The hero image */
 .hero-image {
     /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */

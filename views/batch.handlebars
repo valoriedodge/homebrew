@@ -1,0 +1,35 @@
+<div class="container" style="width:70%" >
+  <h1 style="text-align:center; margin:50px 0px;">{{batch.name}}</h1>
+  <div>
+    Rating: {{batch.rating}}<br>
+    Recipe: {{batch.recipe}}<br>
+    Date: {{batch.date}}<br>
+    Quantity: {{batch.quantity}} Gallons<br>
+    Fermentation: {{batch.brewing}}<br>
+    Fruit used:
+    <table>
+      <thead>
+        <th>Supplier</th>
+        <th>Fruit</th>
+        <th>Quantity</th>
+  {{#each bFruits}}
+    <tr>
+      <td>{{this.name}} </td>
+      <td>{{this.type}} </td>
+      <td>{{this.quantity}} </td>
+    </tr>
+  <!-- <div class="row">
+    <div class="col">
+      {{this.name}}
+    </div>
+    <div class="col">
+      {{this.type}}
+    </div>
+    <div class="col">
+      {{this.quantity}}
+    </div>
+  </div> -->
+  {{/each}}
+</table>
+  </div>
+</div>
